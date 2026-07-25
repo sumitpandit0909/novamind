@@ -8,13 +8,13 @@ services:
       - "6333:6333"
       - "6334:6334"
     volumes:
-      - qdrant_data:/qdrant/storage
+      - qdrant_storage:/qdrant/storage
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6380:6379" # Host:6380 -> Container:6379 (avoid conflict with vanshu-redis on 6379)
     volumes:
       - redis_data:/data
 
@@ -22,19 +22,17 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8001:8000" # Host:8001 -> Container:8000 (avoid conflict with vanshu-web on 8000)
     environment:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      - REDIS_URL=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - qdrant
       - redis
     volumes:
       - temp_uploads:/app/temp_uploads
-      - local_qdrant_db:/app/local_qdrant_db
 
 volumes:
-  qdrant_data:
+  qdrant_storage:
   redis_data:
   temp_uploads:
-  local_qdrant_db:
