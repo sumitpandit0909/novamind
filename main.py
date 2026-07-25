@@ -16,7 +16,7 @@ app = FastAPI()
 # Enable CORS for external frontend applications
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://novamind-beta.vercel.app/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
