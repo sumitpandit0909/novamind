@@ -1,5 +1,5 @@
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams
+from qdrant_client.models import Distance, VectorParams, PayloadSchemaType
 from config.config import settings
 
 # Use cloud Qdrant from settings, fallback to local if not configured
@@ -32,3 +32,10 @@ def collection_db():
                 distance=Distance.COSINE
             )
         )
+        # Create payload index on session_id for filtering queries
+        client.create_payload_index(
+            collection_name="document",
+            field_name="session_id",
+            field_schema=PayloadSchemaType.KEYWORD
+        )
+        print("Created payload index on 'session_id' field")
