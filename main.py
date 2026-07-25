@@ -100,7 +100,11 @@ async def ask_query(query: Query):
             "status": "failed",
             "message": str(e)
         }
-
+@app.get("/")
+def health():
+    return {
+        "status":"running"
+    }
 @app.get("/history/{session_id}")
 async def get_chat_history(session_id: str):
     try:
