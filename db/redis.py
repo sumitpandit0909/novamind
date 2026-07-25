@@ -1,6 +1,8 @@
 from redis import Redis
 import json
-redis_client = Redis.from_url("redis://localhost:6379")
+from config.config import settings
+
+redis_client = Redis.from_url(settings.REDIS_URL or "redis://localhost:6379")
 
 
 def add_message(session_id:str,role:str,content:str):

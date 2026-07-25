@@ -1,6 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import StreamingResponse
 from db.redis import get_history,add_message
 from pydantic import BaseModel
@@ -11,12 +10,15 @@ from services.qdrant import create_points, upload_points
 from db.qdrant import collection_db
 from services.llm import generate_response
 
+# Set FILES_API_URL for local file processing (Vercel uses /tmp)
+FILES_BASE = "/tmp" if os.environ.get("VERCEL") else os.getcwd()
+
 app = FastAPI()
 
 # Enable CORS for external frontend applications
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://novamind-beta.vercel.app/"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,8 +37,8 @@ class Query(BaseModel):
 @app.post("/upload")
 async def upload(user_id: str, session_id: str, file: UploadFile = File(...)):
     try:
-        # Create temp uploads folder in workspace if not exists
-        temp_dir = "temp_uploads"
+        # Use /tmp on Vercel, temp_uploads locally
+        temp_dir = os.path.join(FILES_BASE, "temp_uploads")
         os.makedirs(temp_dir, exist_ok=True)
         
         # Save uploaded file to disk
@@ -118,9 +120,3 @@ async def get_chat_history(session_id: str):
             "status": "failed",
             "message": str(e)
         }
-
-# Serve static frontend files
-# Make sure frontend/dist folder exists before starting the app!
-dist_dir = "frontend/dist"
-os.makedirs(dist_dir, exist_ok=True)
-app.mount("/", StaticFiles(directory=dist_dir, html=True), name="frontend")
