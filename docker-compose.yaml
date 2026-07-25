@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - qdrant
+      - redis
+    volumes:
+      - temp_uploads:/app/temp_uploads
+      - local_qdrant_db:/app/local_qdrant_db
+
+volumes:
+  qdrant_data:
+  redis_data:
+  temp_uploads:
+  local_qdrant_db:
