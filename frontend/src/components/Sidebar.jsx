@@ -20,7 +20,10 @@ export default function Sidebar({
   currentSessionId,
   onNewChat,
   onSwitchSession,
-  onDeleteSession
+  onDeleteSession,
+  // Mobile toggle props
+  isOpen,
+  onClose
 }) {
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -143,12 +146,12 @@ export default function Sidebar({
   });
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${isOpen ? ' open' : ''}`}>
       <div className="brand-header">
         <img src="/logo.png" alt="NovaMind Logo" className="brand-logo" />
         <div className="brand-info">
           <h1>NovaMind</h1>
-          <span class="brand-subtitle">AI Knowledge Assistant</span>
+          <span className="brand-subtitle">AI Knowledge Assistant</span>
         </div>
       </div>
 

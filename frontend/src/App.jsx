@@ -57,6 +57,9 @@ function createSessionObj(name) {
 }
 
 export default function App() {
+  // ── Mobile sidebar toggle ──
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   // ── Session management ──
   const [sessions, setSessions] = useState(() => loadSessions());
   const [currentSessionId, setCurrentSessionId] = useState(() => getOrCreateSessionId());
@@ -439,6 +442,23 @@ export default function App() {
 
   return (
     <div className="app-container">
+      {/* Mobile sidebar toggle button */}
+      <button
+        className="mobile-sidebar-toggle"
+        onClick={() => setSidebarOpen(prev => !prev)}
+        title={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+      >
+        <i className={`fa-solid ${sidebarOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
+      </button>
+
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div
+          className="mobile-sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
+
       <Sidebar
         userId={userId}
         userEmail={email}
@@ -459,6 +479,8 @@ export default function App() {
         onNewChat={handleNewChat}
         onSwitchSession={handleSwitchSession}
         onDeleteSession={handleDeleteSession}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
       <ChatArea
         messages={messages}
